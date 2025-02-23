@@ -1,0 +1,31 @@
+.editor-container {
+    margin-top: 10px;
+    margin-left: 20px;
+    width: 65%;
+    
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.editor-header
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+
+.editor
+{
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+
+
+

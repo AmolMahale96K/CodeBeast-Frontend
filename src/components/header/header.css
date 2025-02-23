@@ -1,0 +1,44 @@
+
+
+header{
+    height: 50px;
+    width: 100%;
+    background-color: #A9B5DF;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-text {
+    margin-left: 20px;
+    font-size: 35px;
+    font-family: 'Arial', sans-serif;  
+    font-weight: bold;
+    color: #000;  
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    -webkit-text-stroke: 0.7px rgb(148, 169, 180);
+}
+
+.header-buttons-div
+{
+    margin-right: 20px;
+}
+
+.header-button
+{
+    height: 35px;
+    width: 90px;
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: #AEEA94;
+    font-size: 15px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.header-button:hover
+{
+    background-color: white;
+}
+

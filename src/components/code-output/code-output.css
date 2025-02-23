@@ -1,0 +1,49 @@
+.output-div
+{
+    height: 550px;
+    width: 30%;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+
+.result-label
+{
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+
+.result-div
+{
+    height: 360px;
+    width: 95%;
+    border: 1px solid black;
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 10px;
+    padding-top: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    overflow-y: scroll;
+}
+
+.result-err
+{
+    border: 1px solid red;
+    color:red;
+}
+
+
+.input-box
+{
+    width: 95%;;
+    font-size: 15px;
+    font-weight: bold;
+    padding-left: 10px;
+    padding-top: 10px;
+}
