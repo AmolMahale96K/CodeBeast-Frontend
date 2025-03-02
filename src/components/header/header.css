@@ -1,44 +1,87 @@
-
-
-header{
-    height: 50px;
+/* Header Styling */
+header {
+    height: 50px; /* Increased height */
     width: 100%;
-    background-color: #A9B5DF;
+    background: #1B1B2F; /* Darker Gray-Blue for contrast */
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 25px; /* Increased padding for better spacing */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    border-bottom: 3px solid #282A36; /* More visible border */
 }
 
+/* Header Text */
 .header-text {
-    margin-left: 20px;
-    font-size: 35px;
-    font-family: 'Arial', sans-serif;  
-    font-weight: bold;
-    color: #000;  
-    letter-spacing: 1px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    -webkit-text-stroke: 0.7px rgb(148, 169, 180);
+    font-size: 24px; /* Slightly larger */
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.15);
 }
 
-.header-buttons-div
-{
-    margin-right: 20px;
+/* Button Container */
+.header-buttons-div {
+    display: flex;
+    gap: 18px; /* Increased spacing */
+    margin-right: 35px; /* Ensures buttons fit */
 }
 
-.header-button
-{
-    height: 35px;
-    width: 90px;
-    border: 2px solid black;
-    border-radius: 10px;
-    background-color: #AEEA94;
+/* Button Styling */
+.header-button {
+    height: 36px; /* Increased height */
+    min-width: 100px; /* Better text spacing */
+    padding: 8px 44px;
+    border: none;
+    border-radius: 8px;
+    background: #0A84FF; /* Vibrant Blue */
+    color: #ffffff;
     font-size: 15px;
     font-weight: bold;
-    margin-left: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    white-space: nowrap;
 }
 
-.header-button:hover
-{
-    background-color: white;
+.header-button:hover {
+    background: #0061E0; /* Darker Blue */
+    transform: translateY(-2px);
 }
 
+/* Secondary Button (Login) */
+.header-button.secondary {
+    background: #00C897; /* Brighter Green */
+}
+
+.header-button.secondary:hover {
+    background: #009F74; /* Darker Green */
+}
+
+/* Label Styling (Whitish Coding Theme) */
+label {
+    font-weight: bold;
+    color: #D3D3D3; /* Light Grayish-White */
+    font-size: 14px;
+}
+
+/* Fixing Overflow */
+@media (max-width: 600px) {
+    .header-buttons-div {
+        gap: 10px;
+        margin-right: 15px;
+    }
+
+    .header-button {
+        min-width: 85px;
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+
+    .header-text {
+        font-size: 20px;
+    }
+}

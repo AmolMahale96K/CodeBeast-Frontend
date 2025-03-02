@@ -1,0 +1,45 @@
+/* Login Page Container */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #0b2081, #764ba2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Bigger Half Circles (Covering 30-40% of screen) */
+.half-circle {
+    position: absolute;
+    width: 400px; /* Increased size */
+    height: 400px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+/* Top Left Large Half Circle */
+.half-circle.top-left {
+    top: -200px; /* Moves half outside */
+    left: -200px;
+}
+
+/* Bottom Right Large Half Circle */
+.half-circle.bottom-right {
+    bottom: -200px;
+    right: -200px;
+}
+
+/* Login Form */
+.login-form {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+    width: 450px;
+    text-align: center;
+    border: 1px solid #c3d0e4;
+    z-index: 1;
+    backdrop-filter: blur(10px);
+}

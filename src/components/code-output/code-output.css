@@ -1,49 +1,77 @@
-.output-div
-{
-    height: 550px;
-    width: 30%;
-    border: 1px solid black;
+/* Output Container */
+.output-div {
+    height: 480px; /* Slightly reduced */
+    width: 35%; /* Reduced width */
+    /* border: 2px solid black; */
+    background: rgba(255, 255, 255, 0.95);
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    margin-top: 30px; /* Adjusted margin */
+    padding: 12px; /* Slightly smaller padding */
+    border-radius: 8px; /* Slightly reduced */
+    box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.15);
 }
 
-
-.result-label
-{
-    margin-top: 15px;
-    margin-bottom: 5px;
+/* Labels */
+.result-label {
+    margin-top: 8px; /* Reduced margin */
+    margin-bottom: 4px;
+    font-size: 13px; /* Slightly smaller font */
+    font-weight: bold;
+    color: #2c3e50;
 }
 
-
-.result-div
-{
-    height: 360px;
-    width: 95%;
+/* Output Box */
+.result-div {
+    height: 280px; /* Reduced height */
+    width: 88%; /* Reduced width */
     border: 1px solid black;
+    background: #f9f9ff;
     display: flex;
     flex-wrap: wrap;
-    padding-left: 10px;
-    padding-top: 10px;
-    font-size: 15px;
+    padding: 6px; /* Slightly smaller padding */
+    font-size: 13px;
     font-weight: bold;
-    margin-bottom: 20px;
-    overflow-y: scroll;
+    color: #333;
+    margin-bottom: 12px; /* Reduced margin */
+    overflow-y: auto;
+    border-radius: 6px; /* Slightly reduced */
 }
 
-.result-err
-{
-    border: 1px solid red;
-    color:red;
+/* Error Styling */
+.result-err {
+    border: 2px solid red;
+    color: red;
+    background: #ffe6e6;
 }
 
-
-.input-box
-{
-    width: 95%;;
-    font-size: 15px;
+/* Input Box */
+.input-box {
+    width: 88%; /* Reduced width */
+    font-size: 13px; /* Slightly smaller font */
     font-weight: bold;
-    padding-left: 10px;
-    padding-top: 10px;
+    padding: 7px; /* Reduced padding */
+    border: 1px solid black;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #333;
+    transition: border 0.3s;
+}
+
+/* Input Focus Effect */
+.input-box:focus {
+    border-color: #764ba2;
+    outline: none;
+}
+
+/* Scrollbar Styling */
+.result-div::-webkit-scrollbar {
+    width: 5px; /* Further reduced */
+}
+
+.result-div::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 5px; /* Adjusted */
 }

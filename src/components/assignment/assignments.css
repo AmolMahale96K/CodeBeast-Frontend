@@ -1,0 +1,69 @@
+.assignments-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #e0e4e8;
+    color: #2c3e50;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+/* Title */
+h2 {
+    color: #1abc9c;
+}
+
+/* Assignment List */
+.assignment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* Individual Assignment */
+.assignment-card {
+    background: #34495e;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.assignment-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Completed Assignments */
+.assignment-card.completed {
+    background: #2ecc71;
+}
+
+/* Status Labels */
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.status.completed {
+    background: #27ae60;
+    color: white;
+}
+
+.status.pending {
+    background: #e74c3c;
+    color: white;
+}
+
+/* No Assignments */
+.no-assignments {
+    margin-top: 20px;
+    font-size: 18px;
+}
