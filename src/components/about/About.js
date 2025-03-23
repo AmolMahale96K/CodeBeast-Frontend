@@ -56,7 +56,7 @@ function About() {
         {features.map((feature, index) => (
           <div
             key={index}
-            ref={(el) => (featureRefs.current[index] = el)}
+            ref={(el) => (featureRefs.current[index] = el) }
             className="feature-box"
           >
             {feature}

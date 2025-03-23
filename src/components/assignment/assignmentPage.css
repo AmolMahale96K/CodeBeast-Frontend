@@ -1,0 +1,226 @@
+/* General Styling */
+.exam-container {
+    margin: 2rem auto;
+    padding: 1.5rem;
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Header */
+.exam-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.exam-header h2 {
+    font-size: 1.8rem;
+    color: #00d8ff;
+    margin: 0;
+}
+
+/* Code Editor Section */
+.code-container {
+    /* display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+    height: auto;
+    align-items: flex-start; */
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+  /* background: #484343; */
+  background: #f4f4f4;
+}
+
+/* Ensure responsiveness for smaller screens */
+@media (max-width: 768px) {
+    .code {
+        flex-direction: column;
+    }
+}
+
+/* Code Editor Styling */
+.code-editor-container {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+/* Code Output Section */
+.output-section {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+.output-section label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #00d8ff;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.input-box {
+    width: 100%;
+    border: 1px solid #444;
+    padding: 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+/* Output Display */
+.result-div {
+    padding: 0.8rem;
+    border-radius: 5px;
+    border: 1px solid #444;
+    min-height: 50px;
+    font-size: 1rem;
+    white-space: pre-wrap;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Buttons */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+}
+
+.run-btn, .submit-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 48%;
+}
+
+.run-btn {
+    background: #00d8ff;
+    color: #000;
+}
+
+.run-btn:hover {
+    background: #00bcd4;
+}
+
+.submit-btn {
+    background: #28a745;
+    color: white;
+}
+
+.submit-btn:hover {
+    background: #218838;
+}
+
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+/* Table Headers & Cells */
+td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+/* First Column Styling */
+td:first-child {
+    font-weight: bold;
+    background: #f9f9f9;
+    width: 30%;
+}
+
+/* Second Column Styling */
+td:last-child {
+    color: #333;
+}
+
+/* Alternate Row Background */
+tr:nth-child(even) {
+    background: #f4f4f4;
+}
+
+/* 🔹 Popup Styles */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+    z-index: 1000;
+}
+
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    color: black;
+}
+
+.popup-content p {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.popup-content button {
+    background: #28a745;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.popup-content button:hover {
+    background: #218838;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    table {
+        font-size: 14px;
+    }
+
+    td {
+        padding: 10px;
+    }
+}
+
+
+/* Animation for output */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

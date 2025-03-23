@@ -16,6 +16,7 @@ import Dashboard from "./components/dashboard/Dashboard";
 import SubNav from "./components/nav/SubNav";
 import Assignments from "./components/assignment/Assignment";
 import Tests from "./components/tests/Tests";
+import AssignmentPage from "./components/assignment/AssignmentPage";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
@@ -170,6 +171,7 @@ function App() {
                 <Route path="/About" element={<About />} />
                 <Route path="/dashboard" element={<DashboardLayout />}>
                     <Route index element={<Dashboard />} />
+                    <Route path="assignment/:id" element={<AssignmentPage />} />
                     <Route path="assignments" element={<Assignments />} />
                     <Route path="tests" element={<Tests />} />
                 </Route>
