@@ -10,6 +10,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [student, setStudent] = useState(null); // Initially null to handle loading state
   const [loading, setLoading] = useState(true);
+  const [testCompletionData, setTestCompletionData] = useState([]);
+  const [assignmentCompletionData, setAssignmentCompletionData] = useState([]);
+  const [assignments, setAssignments] = useState([]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -36,27 +39,62 @@ const Dashboard = () => {
     fetchUserProfile();
   }, [navigate]);
 
+  useEffect(() => {
+    const fetchTestCompletionData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const response = await axios.get("http://localhost:5000/api/testCompletion", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setTestCompletionData(response.data);
+      } catch (error) {
+        console.error("Error fetching test completion data:", error);
+      }
+    };
+
+    fetchTestCompletionData();
+  }, []);
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const response = await axios.get("http://localhost:5000/api/assignments", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setAssignments(response.data);
+      } catch (error) {
+        console.error("Error fetching assignments:", error);
+      }
+    };
+
+    fetchAssignments();
+  }, []);
+
   if (loading) return <p>Loading...</p>;
   if (!student) return <p>Error loading user data.</p>;
 
-  // Ensure testScores exists before mapping
-  const testPerformanceData = (student.testScores || []).map((score, index) => ({
-    name: `Test ${index + 1}`,
-    score,
-  }));
+  // Count solved and pending assignments
+  const completedAssignments = assignments.filter(a => a.solved === 1).length;
+  const pendingAssignments = assignments.filter(a => a.solved === 0).length;
 
   const assignmentData = [
-    { name: "Completed", value: student.completedAssignments || 0 },
-    { name: "Pending", value: student.pendingAssignments || 0 },
+    { name: "Completed", value: completedAssignments },
+    { name: "Pending", value: pendingAssignments },
   ];
 
   const overallData = [
-    { name: "Assignments", Completed: student.completedAssignments || 0, Pending: student.pendingAssignments || 0 },
+    { name: "Assignments", Completed: completedAssignments, Pending: pendingAssignments },
     { name: "Tests", Attempted: student.attemptedTests || 0, Pending: student.pendingTests || 0 },
   ];
 
   return (
-
     <div className="dashboard-container">
       <h2 className="dashboard-title">Welcome, {student.name}!</h2>
 
@@ -88,36 +126,10 @@ const Dashboard = () => {
             </PieChart>
           </ResponsiveContainer>
         </div>
-
-        <div className="chart-card">
-          <h3>Test Performance Over Time</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={testPerformanceData}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="score" stroke="#82ca9d" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      <div className="chart-card">
-        <h3>Progress Breakdown</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={overallData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="Completed" fill="#00C49F" />
-            <Bar dataKey="Pending" fill="#FFBB28" />
-          </BarChart>
-        </ResponsiveContainer>
       </div>
     </div>
   );
 };
 
 export default Dashboard;
+ 
