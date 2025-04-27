@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./assignments.css";
+import jwt_decode from "jwt-decode";
 
 const Assignments = () => {
     const [assignments, setAssignments] = useState([]);
@@ -9,6 +10,24 @@ const Assignments = () => {
     const [selectedAssignment, setSelectedAssignment] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
+
+    // Function to get userId from the JWT token
+    const getUserIdFromToken = () => {
+        const token = localStorage.getItem("token"); // Retrieve the token from localStorage
+
+        if (!token) {
+            throw new Error("User is not authenticated");
+        }
+
+        // Decode the JWT token to extract the user ID
+        const decodedToken = jwt_decode(token);
+
+        // Extract userId (it could be 'id' or 'sub' depending on how your JWT is structured)
+        const userId = decodedToken.id || decodedToken.sub;
+        return userId;
+    };
+
+    const userId = getUserIdFromToken();
 
     useEffect(() => {
         const fetchAssignments = async () => {
@@ -25,13 +44,8 @@ const Assignments = () => {
             }
         };
 
-        fetchAssignments();
-
-        // Refresh assignments every 5 seconds
-        const interval = setInterval(fetchAssignments, 5000);
-
-        return () => clearInterval(interval); // Cleanup on unmount
-    }, []);
+        fetchAssignments(); // Fetch assignments only once when the component mounts
+    }, []); // Empty dependency array ensures the effect runs only once on mount
 
     const handleAssignmentClick = (assignment) => {
         setSelectedAssignment(assignment);
@@ -66,14 +80,13 @@ const Assignments = () => {
             ) : assignments.length > 0 ? (
                 <div className="assignment-list">
                     {assignments.map((assignment) => (
-                        <div 
-                            key={assignment._id} 
-                            className={`assignment-card ${assignment.solved === assignment.totalQuestions? "completed" : ""}`}
+                        <div
+                            key={assignment._id}
+                            className={`assignment-card ${Array.isArray(assignment.solved) && assignment.solved.includes(userId) ? "completed" : ""}`}
                             onClick={() => handleAssignmentClick(assignment)}
                         >
                             <h3>{assignment.name}</h3>
-                            <p>Questions Solved: {assignment.solved}/{assignment.totalQuestions}</p>
-                            {assignment.solved === assignment.totalQuestions? (
+                            {Array.isArray(assignment.solved) && assignment.solved.includes(userId) ? (
                                 <span className="status completed">✅ Completed</span>
                             ) : (
                                 <span className="status pending">⏳ In Progress</span>

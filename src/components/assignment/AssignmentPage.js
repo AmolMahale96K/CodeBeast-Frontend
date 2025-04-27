@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import CodeEditor from "../code-editor/CodeEditor";
 import CodeOutput from "../code-output/CodeOutput";
 import axios from "axios";
+import jwt_decode from 'jwt-decode';
+ // Import jwt-decode
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./assignmentPage.css";
@@ -18,12 +20,14 @@ const AssignmentPage = () => {
     const [output, setOutput] = useState("");
     const [testCases, setTestCases] = useState([]);
     const [passedCountInfo, setPassedCountInfo] = useState("");
+    
     const [input, setInput] = useState("");  // Add this line to define input state
 
 
 
     const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
+    
     useEffect(() => {
         const fetchAssignment = async () => {
             try {
@@ -42,10 +46,29 @@ const AssignmentPage = () => {
 
     const updateDatabaseOnSuccess = async (id) => {
         try {
-            await axios.put(`${API_URL}/assignments/${id}/solve`);
+            // Get the JWT token from localStorage
+            const token = localStorage.getItem("token");
+    
+            if (!token) {
+                throw new Error("User is not authenticated");
+            }
+    
+            // Decode the JWT token to extract the user ID
+            const decodedToken = jwt_decode(token);
+    
+            // In your decoded JWT, the user ID might be stored in 'id' or 'sub'
+            const userId = decodedToken.id ;  // Check if the 'id' or 'sub' field holds the user ID
+    
+            if (!userId) {
+                throw new Error("User ID not found in the token");
+            }
+    
+            // Pass the user ID in the body of the request
+            await axios.put(`${API_URL}/assignments/${id}/solve`, { userId });
+    
             toast.success("✅ Assignment marked as solved!");
         } catch (error) {
-            toast.error("❌ Error updating assignment.");
+            toast.error("❌ Error updating assignment. " + error.message);
         }
     };
     
