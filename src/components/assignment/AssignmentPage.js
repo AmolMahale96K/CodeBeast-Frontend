@@ -3,251 +3,312 @@ import { useNavigate, useParams } from "react-router-dom";
 import CodeEditor from "../code-editor/CodeEditor";
 import CodeOutput from "../code-output/CodeOutput";
 import axios from "axios";
-import jwt_decode from 'jwt-decode';
- // Import jwt-decode
+import jwt_decode from "jwt-decode";
+// Import jwt-decode
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./assignmentPage.css";
 
 const AssignmentPage = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const [assignment, setAssignment] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [code, setCode] = useState("");
-    const [language, setLanguage] = useState("java");
-    const [output, setOutput] = useState("");
-    const [testCases, setTestCases] = useState([]);
-    const [passedCountInfo, setPassedCountInfo] = useState("");
-    
-    const [input, setInput] = useState("");  // Add this line to define input state
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [assignment, setAssignment] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [code, setCode] = useState("");
+  const [language, setLanguage] = useState("java");
+  const [output, setOutput] = useState("");
+  const [testCases, setTestCases] = useState([]);
+  const [passedCountInfo, setPassedCountInfo] = useState("");
 
+  const [input, setInput] = useState(""); // Add this line to define input state
 
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
-    const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+  useEffect(() => {
+    const fetchAssignment = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/assignments/${id}`);
+        setAssignment(response.data);
+        setTestCases(response.data.question.testCases || []);
+      } catch (err) {
+        setError("❌ Failed to load assignment details");
+        toast.error("Failed to fetch assignment!");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    
-    useEffect(() => {
-        const fetchAssignment = async () => {
-            try {
-                const response = await axios.get(`${API_URL}/assignments/${id}`);
-                setAssignment(response.data);
-                setTestCases(response.data.question.testCases || []);
-            } catch (err) {
-                setError("❌ Failed to load assignment details");
-                toast.error("Failed to fetch assignment!");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchAssignment();
-    }, [id]);
-
-    const updateDatabaseOnSuccess = async (id) => {
+    const fetchUserCode = async () => {
         try {
-            // Get the JWT token from localStorage
-            const token = localStorage.getItem("token");
+          const token = localStorage.getItem("token");
+          if (!token) return;
     
-            if (!token) {
-                throw new Error("User is not authenticated");
-            }
+          const decodedToken = jwt_decode(token);
+          const userId = decodedToken.id;
     
-            // Decode the JWT token to extract the user ID
-            const decodedToken = jwt_decode(token);
+          const response = await axios.get(`${API_URL}/userassignments`, {
+            params: {
+              userId,
+              assignmentId: id,
+            },
+          });
     
-            // In your decoded JWT, the user ID might be stored in 'id' or 'sub'
-            const userId = decodedToken.id ;  // Check if the 'id' or 'sub' field holds the user ID
-    
-            if (!userId) {
-                throw new Error("User ID not found in the token");
-            }
-    
-            // Pass the user ID in the body of the request
-            await axios.put(`${API_URL}/assignments/${id}/solve`, { userId });
-    
-            toast.success("✅ Assignment marked as solved!");
+          if (response.data?.code) {
+            setCode(response.data.code);
+          }
         } catch (error) {
-            toast.error("❌ Error updating assignment. " + error.message);
+          console.log("No previous code found or error:", error.message);
         }
-    };
+      };
     
+      
 
-    const submitCode = async () => {
-        if (!code.trim()) {
-            toast.error("❌ Please write some code before submitting.");
-            return;
-        }
-    
-        setOutput("Compiling...");
-        toast.info("🚀 Running test cases...");
-    
-        let passedCount = 0;
-        let totalCases = testCases.length;
-        let resultSummary = "";
-    
-        for (let i = 0; i < totalCases; i++) {
-            const testCase = testCases[i];
-    
-            try {
-                // Step 1: Send code execution request
-                const response = await axios.post(`${API_URL}/run`, {
-                    source_code: code,
-                    language,
-                    input: testCase.input,
-                });
-    
-                const { id: execId } = response.data;
-                if (!execId) throw new Error("No execution ID received");
-    
-                let attempts = 0;
-                const maxAttempts = 5;
-                let actualOutput = "Execution Failed";
-    
-                // Step 2: Poll for execution status
-                while (attempts < maxAttempts) {
-                    await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempts))); // Exponential backoff
-    
-                    const statusResponse = await axios.get(`${API_URL}/status?id=${execId}`);
-                    if (statusResponse.data.status === "completed") {
-                        const outputResponse = await axios.get(`${API_URL}/output?id=${execId}`);
-                        actualOutput = outputResponse.data.stdout?.trim() || "No Output";
-                        break;
-                    }
-                    attempts++;
-                }
-    
-                const expectedOutput = testCase.expectedOutput.toString().trim();
-                const passed = actualOutput === expectedOutput;
-    
-                if (passed) passedCount++;
-    
-                // Update the result summary
-                resultSummary += `📝 Test Case ${i + 1}: ${passed ? "✅ Passed" : "❌ Failed"}\n` +
-                    `📥 Input: ${testCase.input}\n` +
-                    `🎯 Expected: ${expectedOutput}\n` +
-                    `📌 Actual: ${actualOutput}\n\n`;
-    
-            } catch (error) {
-                resultSummary += `❌ Error executing Test Case ${i + 1}\n\n`;
-            }
-        }
-    
-        // Update output and test case result info
-        setOutput(resultSummary);
-        setPassedCountInfo(`✅ ${passedCount}/${totalCases} test cases passed!`);
-        toast.info(`✅ ${passedCount}/${totalCases} test cases passed!`);
-    
-        if (passedCount === totalCases) {
-            await updateDatabaseOnSuccess(id); // Pass the assignment ID
-            setTimeout(() => navigate("/dashboard/assignments"), 3000);
-        }
-        
-    };
 
-    const runCode = async () => {
+    fetchAssignment();
+    fetchUserCode();
+  }, [id]);
+
+
+
+  const updateDatabaseOnSuccess = async (id) => {
+    try {
+      // Get the JWT token from localStorage
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("User is not authenticated");
+      }
+
+      // Decode the JWT token to extract the user ID
+      const decodedToken = jwt_decode(token);
+
+      // In your decoded JWT, the user ID might be stored in 'id' or 'sub'
+      const userId = decodedToken.id; // Check if the 'id' or 'sub' field holds the user ID
+
+      if (!userId) {
+        throw new Error("User ID not found in the token");
+      }
+
+      // Pass the user ID in the body of the request
+      await axios.put(`${API_URL}/assignments/${id}/solve`, { userId });
+
+      toast.success("✅ Assignment marked as solved!");
+    } catch (error) {
+      toast.error("❌ Error updating assignment. " + error.message);
+    }
+  };
+
+  const submitCode = async () => {
+    if (!code.trim()) {
+      toast.error("❌ Please write some code before submitting.");
+      return;
+    }
+
+    setOutput("Compiling...");
+    toast.info("🚀 Running test cases...");
+
+    let passedCount = 0;
+    let totalCases = testCases.length;
+    let resultSummary = "";
+
+    for (let i = 0; i < totalCases; i++) {
+      const testCase = testCases[i];
+
+      try {
+        // Step 1: Send code execution request
+        const response = await axios.post(`${API_URL}/run`, {
+          source_code: code,
+          language,
+          input: testCase.input,
+        });
+
+        const { id: execId } = response.data;
+        if (!execId) throw new Error("No execution ID received");
+
+        let attempts = 0;
+        const maxAttempts = 5;
+        let actualOutput = "Execution Failed";
+
+        // Step 2: Poll for execution status
+        while (attempts < maxAttempts) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, 1000 * Math.pow(2, attempts))
+          ); // Exponential backoff
+
+          const statusResponse = await axios.get(
+            `${API_URL}/status?id=${execId}`
+          );
+          if (statusResponse.data.status === "completed") {
+            const outputResponse = await axios.get(
+              `${API_URL}/output?id=${execId}`
+            );
+            actualOutput = outputResponse.data.stdout?.trim() || "No Output";
+            break;
+          }
+          attempts++;
+        }
+
+        const expectedOutput = testCase.expectedOutput.toString().trim();
+        const passed = actualOutput === expectedOutput;
+
+        if (passed) passedCount++;
+
+        // Update the result summary
+        resultSummary +=
+          `📝 Test Case ${i + 1}: ${passed ? "✅ Passed" : "❌ Failed"}\n` +
+          `📥 Input: ${testCase.input}\n` +
+          `🎯 Expected: ${expectedOutput}\n` +
+          `📌 Actual: ${actualOutput}\n\n`;
+      } catch (error) {
+        resultSummary += `❌ Error executing Test Case ${i + 1}\n\n`;
+      }
+    }
+
+    // Update output and test case result info
+    setOutput(resultSummary);
+    setPassedCountInfo(`✅ ${passedCount}/${totalCases} test cases passed!`);
+    toast.info(`✅ ${passedCount}/${totalCases} test cases passed!`);
+
+    if (passedCount === totalCases) {
+      await updateDatabaseOnSuccess(id); // Pass the assignment ID
+      setTimeout(() => navigate("/dashboard/assignments"), 3000);
+    }
+
+    // After running all test cases, whether passed or not, save to DB
+    try {
+      const token = localStorage.getItem("token");
+      const decodedToken = jwt_decode(token);
+      const userId = decodedToken.id; // Adjust if your token has user id in another field
+
+      await axios.post(`${API_URL}/userassignments`, {
+        userId: userId,
+        assignmentId: id,
+        code: code,
+        passTestCases: passedCount,
+      });
+
+      toast.success("✅ Code submission saved!");
+    } catch (error) {
+      console.error("Error saving code submission:", error.message);
+      toast.error("❌ Failed to save your submission.");
+    }
+  };
+
+  const runCode = async () => {
+    try {
+      setOutput("Compiling...");
+      toast.info("Compiling code...", { autoClose: 2000 });
+
+      const response = await axios.post(`${API_URL}/run`, {
+        source_code: code,
+        language: language,
+        input: input,
+      });
+
+      const { id } = response.data;
+      if (!id) {
+        setOutput("Error: No execution ID received");
+        toast.error("Error: No execution ID received");
+        return;
+      }
+
+      let attempts = 0;
+      const maxAttempts = 10;
+      const baseDelay = 1000;
+
+      const checkStatus = async () => {
+        if (attempts >= maxAttempts) {
+          setOutput("Execution timed out.");
+          toast.error("Execution timed out.");
+          return;
+        }
+
         try {
-            setOutput("Compiling...");
-            toast.info("Compiling code...", { autoClose: 2000 });
+          const statusResponse = await axios.get(`${API_URL}/status?id=${id}`);
+          const status = statusResponse.data.status;
 
-            const response = await axios.post(`${API_URL}/run`, {
-                source_code: code,
-                language: language,
-                input: input,
-            });
+          if (status === "completed") {
+            const outputResponse = await axios.get(
+              `${API_URL}/output?id=${id}`
+            );
+            const stdout = outputResponse.data.stdout;
+            const stderr = outputResponse.data.stderr;
 
-            const { id } = response.data;
-            if (!id) {
-                setOutput("Error: No execution ID received");
-                toast.error("Error: No execution ID received");
-                return;
+            if (stdout) {
+              setOutput(stdout);
+              toast.success("Code executed successfully!", { autoClose: 2000 });
+            } else {
+              setOutput(stderr || "No output received.");
+              toast.error(stderr || "Error: No output received.");
             }
-
-            let attempts = 0;
-            const maxAttempts = 10;
-            const baseDelay = 1000;
-
-            const checkStatus = async () => {
-                if (attempts >= maxAttempts) {
-                    setOutput("Execution timed out.");
-                    toast.error("Execution timed out.");
-                    return;
-                }
-
-                try {
-                    const statusResponse = await axios.get(`${API_URL}/status?id=${id}`);
-                    const status = statusResponse.data.status;
-
-                    if (status === "completed") {
-                        const outputResponse = await axios.get(`${API_URL}/output?id=${id}`);
-                        const stdout = outputResponse.data.stdout;
-                        const stderr = outputResponse.data.stderr;
-                        
-                        if (stdout) {
-                            setOutput(stdout);
-                            toast.success("Code executed successfully!", { autoClose: 2000 });
-                        } else {
-                            setOutput(stderr || "No output received.");
-                            toast.error(stderr || "Error: No output received.");
-                        }
-                    } else {
-                        attempts++;
-                        const nextDelay = baseDelay * Math.pow(2, attempts);
-                        setTimeout(checkStatus, nextDelay);
-                    }
-                } catch (error) {
-                    setOutput("Error fetching execution status");
-                    toast.error("Error fetching execution status");
-                }
-            };
-
-            checkStatus();
+          } else {
+            attempts++;
+            const nextDelay = baseDelay * Math.pow(2, attempts);
+            setTimeout(checkStatus, nextDelay);
+          }
         } catch (error) {
-            console.error("Error:", error.message);
-            setOutput("Error executing code");
-            toast.error("Error executing code");
+          setOutput("Error fetching execution status");
+          toast.error("Error fetching execution status");
         }
-    };
-    
+      };
 
-    if (loading) return <p>Loading assignment...</p>;
-    if (error) return <p className="error">Error: {error}</p>;
+      checkStatus();
+    } catch (error) {
+      console.error("Error:", error.message);
+      setOutput("Error executing code");
+      toast.error("Error executing code");
+    }
+  };
 
-    return (
-        <>
-            <ToastContainer />
-            <h2>📝 Assignment: {assignment?.name}</h2>
-            <div>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Assignment</td>
-                            <td>{assignment?.question?.questionText}</td>
-                        </tr>
-                        <tr>
-                            <td>Sample Input</td>
-                            <td>{assignment?.question?.testCases?.[0]?.input || "N/A"}</td>
-                        </tr>
-                        <tr>
-                            <td>Sample Output</td>
-                            <td>{assignment?.question?.testCases?.[0]?.expectedOutput ?? "N/A"}</td>
-                        </tr>
-                        <tr>
-                            <td>Status</td>
-                            <td>{passedCountInfo}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div className="exam-container">
-                <button className="submit-btn" onClick={submitCode}>Submit</button>
-                <div className="code-container">
-                    <CodeEditor code={code} setCode={setCode} language={language} setLanguage={setLanguage} runCode={runCode} />
-                    <CodeOutput input={input} setInput={setInput} output={output} />
-                </div>
-            </div>
-        </>
-    );
+  if (loading) return <p>Loading assignment...</p>;
+  if (error) return <p className="error">Error: {error}</p>;
+
+  return (
+    <>
+      <ToastContainer />
+      <h2>📝 Assignment: {assignment?.name}</h2>
+      <div>
+        <table>
+          <tbody>
+            <tr>
+              <td>Assignment</td>
+              <td>{assignment?.question?.questionText}</td>
+            </tr>
+            <tr>
+              <td>Sample Input</td>
+              <td>{assignment?.question?.testCases?.[0]?.input || "N/A"}</td>
+            </tr>
+            <tr>
+              <td>Sample Output</td>
+              <td>
+                {assignment?.question?.testCases?.[0]?.expectedOutput ?? "N/A"}
+              </td>
+            </tr>
+            <tr>
+              <td>Status</td>
+              <td>{passedCountInfo}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div className="exam-container">
+        <button className="submit-btn" onClick={submitCode}>
+          Submit
+        </button>
+        <div className="code-container">
+          <CodeEditor
+            code={code}
+            setCode={setCode}
+            language={language}
+            setLanguage={setLanguage}
+            runCode={runCode}
+          />
+          <CodeOutput input={input} setInput={setInput} output={output} />
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default AssignmentPage;
