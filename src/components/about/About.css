@@ -1,12 +1,12 @@
 .about-container {
     text-align: center;
     padding: 50px 10%;
-    background: linear-gradient(to right, #f8f9fa, #ffffff);
+    background: #b3c9ea;
 }
 
 .about-heading {
     font-size: 2rem;
-    color: #007bff;
+    color: black;
     margin-bottom: 20px;
 }
 

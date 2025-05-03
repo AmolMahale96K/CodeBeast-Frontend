@@ -57,7 +57,7 @@ const Register = () => {
     }
   
     try {
-      const response = await axios.post("http://localhost:5000/api/register", formDataToSend, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/register`, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
       });
   

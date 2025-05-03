@@ -8,6 +8,7 @@ import jwt_decode from "jwt-decode";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./assignmentPage.css";
+import { color } from "@codemirror/theme-one-dark";
 
 const AssignmentPage = () => {
   const { id } = useParams();
@@ -267,7 +268,7 @@ const AssignmentPage = () => {
   return (
     <>
       <ToastContainer />
-      <h2>📝 Assignment: {assignment?.name}</h2>
+      <h2 style={{color:"black"}}>📝 Assignment: {assignment?.name}</h2>
       <div>
         <table>
           <tbody>

@@ -32,7 +32,7 @@ const Assignments = () => {
     useEffect(() => {
         const fetchAssignments = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/assignments");
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/assignments`);
                 if (!response.ok) throw new Error("Failed to fetch assignments");
 
                 const data = await response.json();
