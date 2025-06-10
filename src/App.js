@@ -22,7 +22,7 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 function App() {
     const [input, setInput] = useState("");
-    const [code, setCode] = useState("// Write code here ...\n");
+    const [code, setCode] = useState("// Write code here .....\n");
     const [output, setOutput] = useState("");
     const [language, setLanguage] = useState("java");
     const [isMobile, setIsMobile] = useState(false);
